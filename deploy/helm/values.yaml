@@ -1,0 +1,65 @@
+# Application URLs
+host: laravel-bjyblog.test
+
+# This value determines the "environment" your application is currently running in
+# Supported: "production", "local"
+env: production
+
+# If it is "true", you need to add "tls.pem" and "tls.key" to the "helm/files" directory
+tls: false
+
+# Supported: "DockerHub", "Aliyun"
+container_registry: Aliyun
+
+# Time Zone
+timezone: 'Asia/Shanghai'
+
+# true: Redirect www URLs to non-www
+# false: Redirect non-www URLs to www
+force_non_www: true
+
+# MySQL
+mysql:
+  # Supported: "5.6", "5.7", "8.0"
+  version: '8.0'
+  # Password of root
+  password: laravel_bjyblog
+
+# Aliyun OSS
+oss:
+  # Upload backup files to Aliyun OSS
+  enabled: false
+  # https://help.aliyun.com/document_detail/31837.html
+  endpoint: 'oss-cn-beijing.aliyuncs.com'
+  # accessKeyID
+  access_key_id: ''
+  # accessKeySecret
+  access_key_secret: ''
+  # https://help.aliyun.com/document_detail/31827.html
+  bucket: ''
+
+# Elasticsearch
+elasticsearch:
+  enabled: true
+  username: elastic
+  password: ''
+
+# Kibana
+kibana:
+  enabled: false
+
+# Fluentd
+fluentd:
+  enabled: false
+
+# Docs
+docs:
+  enabled: false
+
+# Prometheus
+prometheus:
+  enabled: true
+
+# Grafana
+grafana:
+  enabled: true

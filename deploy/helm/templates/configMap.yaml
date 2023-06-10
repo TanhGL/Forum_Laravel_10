@@ -1,0 +1,166 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+data:
+  config: |
+    server {
+        listen       80;
+        server_name  {{ .Values.host }};
+        root   /app/public;
+        index  index.php index.html;
+
+        location / {
+            try_files $uri $uri/ /index.php?$query_string;
+        }
+
+        location ~ \.php$ {
+            fastcgi_pass php-service:9000;
+            fastcgi_index index.php;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+            #fixes timeouts
+            fastcgi_read_timeout 600;
+            include        fastcgi_params;
+        }
+
+        location ~ .*\.(gif|jpg|jpeg|png|bmp)$ {
+            expires 30d;
+            access_log off;
+            add_header Cache-Control public;
+        }
+
+        location ~ .*\.(js|css)?$ {
+            expires 1d;
+            access_log off;
+            add_header Cache-Control public;
+        }
+    }
+
+{{- if .Values.docs.enabled }}
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: docs-config
+data:
+  config: |
+    server {
+        listen       80;
+        server_name  {{ .Values.host }};
+        root   /app;
+        index  index.php index.html;
+
+        location ~ .*\.(gif|jpg|jpeg|png|bmp)$ {
+            expires 30d;
+            access_log off;
+            add_header Cache-Control public;
+        }
+
+        location ~ .*\.(js|css)?$ {
+            expires 1d;
+            access_log off;
+            add_header Cache-Control public;
+        }
+    }
+
+{{- end }}
+
+{{- if .Values.oss.enabled }}
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ossutil-config
+data:
+  config: |
+    [Credentials]
+    language=EN
+    endpoint={{ .Values.oss.endpoint }}
+    accessKeyID={{ .Values.oss.access_key_id }}
+    accessKeySecret={{ .Values.oss.access_key_secret }}
+{{- end }}
+
+{{- if .Values.prometheus.enabled }}
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+data:
+  config: |
+    global:
+      scrape_interval: 15s
+    scrape_configs:
+      - job_name: 'prometheus'
+        scrape_interval: 5s
+        static_configs:
+          - targets: ['localhost:9090']
+      - job_name: 'node-exporter'
+        static_configs:
+          - targets: ['node-exporter-service:9100']
+{{- end }}
+
+{{- if .Values.grafana.enabled }}
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-config
+data:
+  config: |
+    [server]
+    domain = {{ .Values.host }}
+    root_url = %(protocol)s://%(domain)s:%(http_port)s/grafana/
+    serve_from_sub_path = true
+{{- end }}
+
+{{- if .Values.kibana.enabled }}
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kibana-config
+data:
+  config: |
+    server.name: kibana
+    server.host: "0"
+    elasticsearch.hosts: ["http://elasticsearch-service:9200"]
+    elasticsearch.username: {{ .Values.elasticsearch.username }}
+    elasticsearch.password: {{ .Values.elasticsearch.password }}
+    monitoring.ui.container.elasticsearch.enabled: true
+    server.basePath: /kibana
+    server.rewriteBasePath: true
+{{- end }}
+
+{{- if .Values.fluentd.enabled }}
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluentd-config
+data:
+  config: |
+    <source>
+      @type tail
+      path /var/log/containers/nginx-*.log
+      pos_file /var/log/pos/nginx.log.pos
+      tag nginx
+      <parse>
+        @type cri
+        <parse>
+          @type nginx
+        </parse>
+      </parse>
+    </source>
+
+    <source>
+      @type forward
+      port 24224
+    </source>
+{{- end }}

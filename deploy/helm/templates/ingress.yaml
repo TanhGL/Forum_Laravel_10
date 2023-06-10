@@ -1,0 +1,72 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-ingress
+  annotations:
+    kubernetes.io/ingress.class: "traefik"
+    traefik.ingress.kubernetes.io/redirect-regex: "^https?://{{ if .Values.force_non_www }}www.{{ end }}{{ .Values.host }}/?(.*)"
+    traefik.ingress.kubernetes.io/redirect-replacement: "http{{ if .Values.tls }}s{{ end }}://{{ if eq .Values.force_non_www false }}www.{{ end }}{{ .Values.host }}/$1"
+    ingress.kubernetes.io/redirect-permanent: "true"
+    {{- if .Values.tls }}
+    ingress.kubernetes.io/force-hsts: "true"
+    ingress.kubernetes.io/hsts-max-age: "63072000"
+    ingress.kubernetes.io/hsts-include-subdomains: "true"
+    ingress.kubernetes.io/hsts-preload: "true"
+    ingress.kubernetes.io/ssl-redirect: "true"
+    {{- end }}
+spec:
+  {{- if .Values.tls }}
+  tls:
+    - hosts:
+        - {{ .Values.host }}
+        - www.{{ .Values.host }}
+      secretName: secret-tls
+  {{- end }}
+  rules:
+    - host: {{ .Values.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx-service
+                port:
+                  number: 80
+          {{- if .Values.docs.enabled }}
+          - path: /docs
+            pathType: Prefix
+            backend:
+              service:
+                name: docs-service
+                port:
+                  number: 8081
+          {{- end }}
+          {{- if .Values.grafana.enabled }}
+          - path: /grafana
+            pathType: Prefix
+            backend:
+              service:
+                name: grafana-service
+                port:
+                  number: 3000
+          {{- end }}
+          {{- if .Values.kibana.enabled }}
+          - path: /kibana
+            pathType: Prefix
+            backend:
+              service:
+                name: kibana-service
+                port:
+                  number: 5601
+          {{- end }}
+    - host: www.{{ .Values.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx-service
+                port:
+                  number: 80

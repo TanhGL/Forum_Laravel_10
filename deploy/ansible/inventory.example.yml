@@ -1,0 +1,31 @@
+blog:
+  hosts:
+    local:
+      ansible_host: local.laravel-bjyblog.test
+      ansible_user: ubuntu
+      ansible_become: true
+      ansible_python_interpreter: /usr/bin/python3
+      ansible_ssh_private_key_file: ../multipass/id_rsa
+      app_host: local.laravel-bjyblog.test
+      app_url: http:://local.laravel-bjyblog.test
+    development:
+      ansible_host: development.laravel-bjyblog.test
+      ansible_user: ubuntu
+      ansible_become: true
+      ansible_python_interpreter: /usr/bin/python3
+      app_host: development.laravel-bjyblog.test
+      app_url: http:://development.laravel-bjyblog.test
+    staging:
+      ansible_host: staging.laravel-bjyblog.test
+      ansible_user: ubuntu
+      ansible_become: true
+      ansible_python_interpreter: /usr/bin/python3
+      app_host: staging.laravel-bjyblog.test
+      app_url: https:://staging.laravel-bjyblog.test
+    production:
+      ansible_host: production.laravel-bjyblog.test
+      ansible_user: ubuntu
+      ansible_become: true
+      ansible_python_interpreter: /usr/bin/python3
+      app_host: production.laravel-bjyblog.test
+      app_url: https:://production.laravel-bjyblog.test

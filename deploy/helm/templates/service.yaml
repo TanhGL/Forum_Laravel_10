@@ -1,0 +1,182 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+  labels:
+    app: redis
+spec:
+  ports:
+    - port: 6379
+      protocol: TCP
+      targetPort: 6379
+  selector:
+    app: redis
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service
+  labels:
+    app: mysql
+spec:
+  ports:
+    - port: 3306
+      protocol: TCP
+      targetPort: 3306
+  selector:
+    app: mysql
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: php-service
+  labels:
+    app: php
+spec:
+  ports:
+    - port: 9000
+      protocol: TCP
+      targetPort: 9000
+  selector:
+    app: php
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  labels:
+    app: nginx
+spec:
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 80
+  selector:
+    app: nginx
+
+{{- if .Values.docs.enabled }}
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: docs-service
+  labels:
+    app: docs
+spec:
+  ports:
+    - port: 8081
+      protocol: TCP
+      targetPort: 80
+  selector:
+    app: docs
+{{- end }}
+
+{{- if .Values.prometheus.enabled }}
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-service
+  labels:
+    app: prometheus
+spec:
+  ports:
+    - port: 9090
+      protocol: TCP
+      targetPort: 9090
+  selector:
+    app: prometheus
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-exporter-service
+  labels:
+    app: node-exporter
+spec:
+  ports:
+    - port: 9100
+      targetPort: 9100
+  selector:
+    app: node-exporter
+{{- end }}
+
+{{- if .Values.grafana.enabled }}
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-service
+  labels:
+    app: grafana
+spec:
+  ports:
+    - port: 3000
+      protocol: TCP
+      targetPort: 3000
+  selector:
+    app: grafana
+{{- end }}
+
+{{- if .Values.elasticsearch.enabled }}
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch-service
+  labels:
+    app: elasticsearch
+spec:
+  ports:
+    - port: 9200
+      protocol: TCP
+      targetPort: 9200
+  selector:
+    app: elasticsearch
+{{- end }}
+
+{{- if .Values.kibana.enabled }}
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana-service
+  labels:
+    app: kibana
+spec:
+  ports:
+    - port: 5601
+      targetPort: 5601
+  selector:
+    app: kibana
+{{- end }}
+
+{{- if .Values.fluentd.enabled }}
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: fluentd-service
+  labels:
+    app: fluentd
+spec:
+  ports:
+    - port: 24224
+      targetPort: 24224
+  selector:
+    app: fluentd
+{{- end }}
