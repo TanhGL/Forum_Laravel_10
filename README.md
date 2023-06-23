@@ -1,4 +1,4 @@
-# Diễn đàn
+# Forum Laravel 10
 - **Thành viên**: 
 - Ngôn ngữ: Laravel 9; OS: Unbutu: 22.0.4 LTS, Composer 2, SSH: enable
 - Chức năng cũng chỉ ở mức tạm thời đủ dùng như:
